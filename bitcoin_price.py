@@ -57,15 +57,21 @@ df_combined_data = combine_data(df_api_data, df_csv_data)
 base_date = pd.to_datetime('2009-01-03')
 df_combined_data['days_since_base'] = (df_combined_data['date'] - base_date).dt.days
 
-x_log = np.log(df_combined_data['days_since_base'])
+# Extend the lines
+max_days_since_base = df_combined_data['days_since_base'].max()
+future_days = np.arange(max_days_since_base, max_days_since_base + 3500)
+x_log = np.log(np.append(df_combined_data['days_since_base'].values, future_days))
+x_future_log = np.log(future_days)
+
 y_log = np.log(df_combined_data['price'])
+slope, intercept = np.polyfit(x_log[:len(df_combined_data)], y_log, 1)
+y_fit = np.exp(intercept) * np.exp(x_log * slope)
 
-slope, intercept = np.polyfit(x_log, y_log, 1)
-y_fit = np.exp(intercept) * df_combined_data['days_since_base']**slope
+new_intercept = intercept + 0.9
+y_fit_up = np.exp(new_intercept) * np.exp(x_log * slope)
 
-new_intercept = intercept - 1
-y_fit_displaced = np.exp(new_intercept) * df_combined_data['days_since_base']**slope
-
+new_intercept = intercept - 0.9
+y_fit_down = np.exp(new_intercept) * np.exp(x_log * slope)
 
 # Plotting
 plt.figure(figsize=(10, 5))
@@ -74,22 +80,26 @@ plt.plot(df_combined_data['days_since_base'],
          label='Bitcoin Price',
          color='blue',
          alpha=0.5)
-plt.plot(df_combined_data['days_since_base'],
+plt.plot(np.append(df_combined_data['days_since_base'].values, future_days),
          y_fit,
          label='Fit Line',
          color='red',
          linestyle='--')
-plt.plot(df_combined_data['days_since_base'],
-         y_fit_displaced,
+plt.plot(np.append(df_combined_data['days_since_base'].values, future_days),
+         y_fit_down,
+         label='Fit Line Displaced',
+         color='green',
+         linestyle='--')
+plt.plot(np.append(df_combined_data['days_since_base'].values, future_days),
+         y_fit_up,
          label='Fit Line Displaced',
          color='green',
          linestyle='--')
 plt.xscale('log')
 plt.yscale('log')
-desired_ticks = [1000, 2000, 3000, 4000, 5000, 6000]
-desired_tick_labels = [readable_formatter(i*1000, None) if i >= 1 else str(i) for i in desired_ticks]
-plt.xticks(desired_ticks, desired_tick_labels)
-plt.xlabel('Days Since Coinbase (2009-01-03)')
+desired_ticks = [1000, 2000, 3000, 4000, 5000, 6000, 7000, 8000, 9000]
+plt.xticks(desired_ticks, [readable_formatter(i, None) for i in desired_ticks])
+plt.xlabel('Days since Coinbase (2009-01-03)')
 plt.ylabel('Price (USD)')
 plt.title('Bitcoin Price (Log-Log Scale)')
 plt.gca().xaxis.set_major_formatter(FuncFormatter(readable_formatter))
