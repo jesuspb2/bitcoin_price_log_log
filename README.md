@@ -54,4 +54,18 @@ Their contributions to the Bitcoin community have provided valuable perspectives
 ## Disclaimer
 The visualizations provided by this repository are for educational purposes only and should not be construed as financial advice. The accuracy of the data cannot be guaranteed, and users should conduct their own due diligence before making any investment decisions.
 
-Author: @jesusbtd
+## Visualization
+
+![Bitcoin_price.png](Bitcoin_price.png)
+
+6000 days = 2025-06-08
+
+7000 days = 2028-03-04
+
+8000 days = 2030-11-29
+
+9000 days = 2033-08-25
+
+Author: 
+
+Twitter/X: @jesusbtd
