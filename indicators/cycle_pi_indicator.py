@@ -1,6 +1,6 @@
 import numpy as np
 from matplotlib import pyplot as plt
-from bitcoin_price_common import DataFetcher, DataAnalyzer
+from bitcoin_price_common import define_object_bitcoin
 
 
 def calculate_pi_cycle_indicator(df):
@@ -18,11 +18,7 @@ def find_pi_cycle_crossovers(df):
 
 def plot_cycle_pi():
 
-    fetcher = DataFetcher(filepath='../price_bitcoin_early.csv')
-    df_api_data = fetcher.fetch_historical_data()
-    df_csv_data = fetcher.read_csv_data()
-    analyzer = DataAnalyzer()
-    df_combined_data = analyzer.combine_data(df_api_data, df_csv_data)
+    df_combined_data = define_object_bitcoin()
     df_combined_data = calculate_pi_cycle_indicator(df_combined_data)
     crossover_points = find_pi_cycle_crossovers(df_combined_data)
 
