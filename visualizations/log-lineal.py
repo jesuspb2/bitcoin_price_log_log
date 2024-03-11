@@ -1,32 +1,11 @@
 import numpy as np
 from matplotlib import pyplot as plt
 from matplotlib.ticker import FuncFormatter
-from bitcoin_price_common import DataFetcher, DataAnalyzer, DataVisualizer
+from bitcoin_price_common import DataVisualizer, define_object_bitcoin, calculate_fit_line
 
-fetcher = DataFetcher(filepath='../price_bitcoin_early.csv')
-df_api_data = fetcher.fetch_historical_data()
-df_csv_data = fetcher.read_csv_data()
-
-analyzer = DataAnalyzer()
-df_combined_data = analyzer.combine_data(df_api_data, df_csv_data)
-df_prepared_data = analyzer.prepare_data(df_combined_data)
-
+df_combined_data = define_object_bitcoin()
 visualizer = DataVisualizer()
-
-max_days_since_base = df_combined_data['days_since_base'].max()
-future_days = np.arange(max_days_since_base, max_days_since_base + 3500)
-x_log = np.log(np.append(df_combined_data['days_since_base'].values, future_days))
-x_future_log = np.log(future_days)
-
-y_log = np.log(df_combined_data['price'])
-slope, intercept = np.polyfit(x_log[:len(df_combined_data)], y_log, 1)
-y_fit = np.exp(intercept) * np.exp(x_log * slope)
-
-new_intercept = intercept + 0.9
-y_fit_up = np.exp(new_intercept) * np.exp(x_log * slope)
-
-new_intercept = intercept - 0.9
-y_fit_down = np.exp(new_intercept) * np.exp(x_log * slope)
+future_days, y_fit, y_fit_down, y_fit_up = calculate_fit_line(df_combined_data)
 
 # Plotting
 plt.figure(figsize=(10, 5))
